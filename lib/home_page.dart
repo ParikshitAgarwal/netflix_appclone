@@ -1,13 +1,36 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:netflix_clone/mylist_screen.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String image;
-  const HomePage({Key? key, required this.image}) : super(key: key);
+  var popularMovies;
+  var trendingMovies;
+  var topRated;
+  HomePage({
+    Key? key,
+    required this.image,
+    required this.popularMovies,
+    required this.trendingMovies,
+    required this.topRated,
+  }) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String baseImageUrl = "https://image.tmdb.org/t/p/w500";
 
   @override
   Widget build(BuildContext context) {
+    int randomIndex = Random().nextInt(10);
+
     List images = [
       "assets/pic1.png",
       "assets/pic2.png",
@@ -32,7 +55,7 @@ class HomePage extends StatelessWidget {
               margin: EdgeInsets.only(left: 10, right: 10, top: 20),
               width: 30,
               height: 30,
-              child: Image.asset(image),
+              child: Image.asset(widget.image),
             )
           ],
           leading: Container(
@@ -54,44 +77,58 @@ class HomePage extends StatelessWidget {
                   TextButton(
                     onPressed: () {},
                     child: Text("TV Shows",
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
                   TextButton(
                     onPressed: () {},
                     child: Text("Movies",
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: ((context) => MyListScreen(
-                                image: image,
+                                image: widget.image,
                               ))));
                     },
                     child: Text("My List",
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   )
                 ],
               ),
-              Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 210,
-                      height: 310,
-                      child: Image.asset(
-                        "assets/pic5.png",
-                        fit: BoxFit.contain,
-                      ),
+              widget.trendingMovies == null
+                  ? Center(child: CircularProgressIndicator())
+                  : Stack(
+                      children: [
+                        Center(
+                          child: Container(
+                              width: 210,
+                              height: 310,
+                              child: Image.network(baseImageUrl +
+                                  widget.trendingMovies["results"][randomIndex]
+                                      ["poster_path"])
+                              // Image.asset(
+                              //   "assets/pic5.png",
+                              //   fit: BoxFit.contain,
+                              // ),
+                              ),
+                        ),
+                        // Positioned(
+                        //   left: 120,
+                        //   bottom: 10,
+                        //   child: Image.asset("assets/coco.png"),
+                        // ),
+                      ],
                     ),
-                  ),
-                  Positioned(
-                    left: 120,
-                    bottom: 10,
-                    child: Image.asset("assets/coco.png"),
-                  ),
-                ],
-              ),
               SizedBox(
                 height: 16,
               ),
@@ -205,7 +242,7 @@ class HomePage extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(left: 20),
                 child: Text(
-                  "Top 10 in Thriller",
+                  "Popular Movies",
                   style: GoogleFonts.openSans(
                       textStyle: TextStyle(
                           color: Colors.white,
@@ -213,27 +250,32 @@ class HomePage extends StatelessWidget {
                           fontWeight: FontWeight.bold)),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                height: 250,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: ((context, index) {
-                      return Container(
-                        margin: EdgeInsets.all(10),
-                        width: 152,
-                        child: Image.asset(
-                          images[index],
-                          fit: BoxFit.contain,
-                        ),
-                      );
-                    })),
-              ),
+              widget.popularMovies == null
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(
+                      margin: EdgeInsets.all(10),
+                      height: 250,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 10,
+                          itemBuilder: ((context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(10),
+                              width: 152,
+                              child: Image.network(
+                                baseImageUrl +
+                                    widget.popularMovies["results"][index]
+                                        ["poster_path"],
+                                // images[index],
+                                fit: BoxFit.contain,
+                              ),
+                            );
+                          })),
+                    ),
               Container(
                 margin: EdgeInsets.only(left: 20),
                 child: Text(
-                  "Top 10 in Adventure",
+                  "Tredning Movies",
                   style: GoogleFonts.openSans(
                       textStyle: TextStyle(
                           color: Colors.white,
@@ -241,25 +283,32 @@ class HomePage extends StatelessWidget {
                           fontWeight: FontWeight.bold)),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                height: 250,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: ((context, index) {
-                      return Container(
-                        margin: EdgeInsets.all(10),
-                        width: 152,
-                        child:
-                            Image.asset(images[4 - index], fit: BoxFit.contain),
-                      );
-                    })),
-              ),
+              widget.trendingMovies == null
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(
+                      margin: EdgeInsets.all(10),
+                      height: 250,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 10,
+                          itemBuilder: ((context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(10),
+                              width: 152,
+                              child: Image.network(
+                                baseImageUrl +
+                                    widget.trendingMovies["results"][index]
+                                        ["poster_path"],
+                                // images[index],
+                                fit: BoxFit.contain,
+                              ),
+                            );
+                          })),
+                    ),
               Container(
                 margin: EdgeInsets.only(left: 20),
                 child: Text(
-                  "Top 10 in Comedy",
+                  "Top Rated",
                   style: GoogleFonts.openSans(
                       textStyle: TextStyle(
                           color: Colors.white,
@@ -267,23 +316,28 @@ class HomePage extends StatelessWidget {
                           fontWeight: FontWeight.bold)),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                height: 250,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: ((context, index) {
-                      return Container(
-                        margin: EdgeInsets.all(10),
-                        width: 152,
-                        child: Image.asset(
-                          images[index],
-                          fit: BoxFit.contain,
-                        ),
-                      );
-                    })),
-              )
+              widget.topRated == null
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(
+                      margin: EdgeInsets.all(10),
+                      height: 250,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 10,
+                          itemBuilder: ((context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(10),
+                              width: 152,
+                              child: Image.network(
+                                baseImageUrl +
+                                    widget.topRated["results"][index]
+                                        ["poster_path"],
+                                // images[index],
+                                fit: BoxFit.contain,
+                              ),
+                            );
+                          })),
+                    )
             ],
           ),
         ),
