@@ -4,6 +4,10 @@ import 'package:netflix_clone/home_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:netflix_clone/models/movie_result_model.dart';
+
+import 'models/api..dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
 
@@ -11,49 +15,49 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-var popularMovies;
-var trendingMovies;
-var topRated;
+// var popularMovies;
+// var trendingMovies;
+// var topRated;
 
 class _MainPageState extends State<MainPage> {
-  String popularMovieUrl =
-      "https://api.themoviedb.org/3/movie/popular?api_key=3e04f10540e1a09b1e0052f09bd9adfb&language=en-US&page=1";
-  String trendingMovieUrl =
-      "https://api.themoviedb.org/3/trending/movie/day?api_key=3e04f10540e1a09b1e0052f09bd9adfb";
-  String topRatedUrl =
-      "https://api.themoviedb.org/3/movie/top_rated?api_key=3e04f10540e1a09b1e0052f09bd9adfb&language=en-US&page=1";
+  // String popularMovieUrl =
+  //     "https://api.themoviedb.org/3/movie/popular?api_key=3e04f10540e1a09b1e0052f09bd9adfb&language=en-US&page=1";
+  // String trendingMovieUrl =
+  //     "https://api.themoviedb.org/3/trending/movie/day?api_key=3e04f10540e1a09b1e0052f09bd9adfb";
+  // String topRatedUrl =
+  //     "https://api.themoviedb.org/3/movie/top_rated?api_key=3e04f10540e1a09b1e0052f09bd9adfb&language=en-US&page=1";
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    apiCall();
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   apiCall();
+  // }
 
-  Future apiCall() async {
-    http.Response response1 = await http.get(Uri.parse(popularMovieUrl));
-    http.Response response2 = await http.get(Uri.parse(trendingMovieUrl));
-    http.Response response3 = await http.get(Uri.parse(topRatedUrl));
+  // Future apiCall() async {
+  //   // http.Response response1 = await http.get(Uri.parse(popularMovieUrl));
+  //   http.Response response2 = await http.get(Uri.parse(trendingMovieUrl));
+  //   http.Response response3 = await http.get(Uri.parse(topRatedUrl));
 
-    if (response1.statusCode == 200) {
-      setState(() {});
-      var data = response1.body;
-      print(data);
-      popularMovies = json.decode(data);
-    }
-    if (response2.statusCode == 200) {
-      setState(() {});
-      var data = response2.body;
-      print(data);
-      trendingMovies = json.decode(data);
-    }
-    if (response3.statusCode == 200) {
-      setState(() {});
-      var data = response3.body;
-      print(data);
-      topRated = json.decode(data);
-    }
-  }
+  //   // if (response1.statusCode == 200) {
+  //   //   setState(() {});
+  //   //   var data = response1.body;
+  //   //   print(data);
+  //   //   popularMovies = json.decode(data);
+  //   // }
+  //   if (response2.statusCode == 200) {
+  //     setState(() {});
+  //     var data = response2.body;
+  //     print(data);
+  //     trendingMovies = json.decode(data);
+  //   }
+  //   if (response3.statusCode == 200) {
+  //     setState(() {});
+  //     var data = response3.body;
+  //     print(data);
+  //     topRated = json.decode(data);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -151,13 +155,16 @@ class ProfileContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => HomePage(
-                image: profileImage,
-                popularMovies: popularMovies,
-                topRated: topRated,
-                trendingMovies: trendingMovies,
-              ))),
+      onTap: () {
+        // print(movieResults);
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HomePage(
+                  image: profileImage,
+                  // popularMovies: movieList,
+                  // topRated: topRated,
+                  // trendingMovies: trendingMovies,
+                )));
+      },
       child: Container(
         child: Column(
           children: [

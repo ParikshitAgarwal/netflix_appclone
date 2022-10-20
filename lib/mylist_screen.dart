@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:netflix_clone/home_page.dart';
+
+import 'detail_page.dart';
 
 class MyListScreen extends StatelessWidget {
   final String image;
@@ -7,6 +10,7 @@ class MyListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String baseImageUrl = "https://image.tmdb.org/t/p/w500";
     List images = [
       "assets/pic1.png",
       "assets/pic2.png",
@@ -52,18 +56,28 @@ class MyListScreen extends StatelessWidget {
         body: Container(
           margin: EdgeInsets.only(top: 20, left: 10, right: 10),
           child: GridView.builder(
-              itemCount: images.length,
+              itemCount: myList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 0,
                   mainAxisSpacing: 0,
                   mainAxisExtent: 180),
               itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.all(10),
-                  width: 252,
-                  height: 200,
-                  child: Image.asset(images[index], fit: BoxFit.contain),
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => DetailPage(
+                              movieId: myList[index].id.toString(),
+                            ))));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    width: 252,
+                    height: 200,
+                    child: Image.network(
+                        baseImageUrl + myList[index].posterPath!,
+                        fit: BoxFit.contain),
+                  ),
                 );
               }),
         ));
